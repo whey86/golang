@@ -1,2 +1,2 @@
 # golang
-first golang project
+golong test
