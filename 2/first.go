@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+<<<<<<< HEAD
 	"io/ioutil"
 	"sort"
 	"strings"
@@ -15,6 +16,22 @@ func importTextFile(textFile string) string {
 	}
 	return string(b)
 }
+=======
+	"strings"
+
+	//	"regexp"
+	//	"strconv"
+	"sort"
+)
+
+// func importTextFile(textFile string) string {
+// 	b, err := ioutil.ReadFile(textFile)
+// 	if err != nil {
+// 		fmt.Print(err)
+// 	}
+// 	return string(b)
+// }
+>>>>>>> 67512e74d175d2b81fce3fbacbc97e979a83d6fd
 
 func SortString(w string) []string {
 	s := strings.Split(w, "")
@@ -22,7 +39,11 @@ func SortString(w string) []string {
 	return s
 }
 
+<<<<<<< HEAD
 func main() {
+=======
+func test() {
+>>>>>>> 67512e74d175d2b81fce3fbacbc97e979a83d6fd
 	var testString string = "bcaa"
 	fmt.Println(SortString(testString))
 	fmt.Println("Advent of code day 1 part 1")

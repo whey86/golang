@@ -54,6 +54,8 @@ func main() {
 			}
 			for i := 0; i < len(frq); i++ {
 
+				//  fmt.Println(frq[i], " ---- ",sum );
+
 				if frq[i] == sum {
 					fmt.Println("first double frq is ", sum)
 					return
