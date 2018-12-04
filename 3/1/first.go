@@ -9,11 +9,13 @@ import (
 	"strings"
 )
 
-var pattern [][]string
+var pattern [][]tile
 var TAKEN string = "@"
 var OVERRITTEN = "X"
 var EMPTY string = "."
 var takenCounter int = 0
+var isChanged bool = false
+var clean []int
 
 func importTextFile(textFile string) string {
 	b, err := ioutil.ReadFile(textFile)
@@ -24,7 +26,7 @@ func importTextFile(textFile string) string {
 }
 
 func getStringArray() []string {
-	input := importTextFile("test.txt")
+	input := importTextFile("first.txt")
 	var arrayOflines []string
 	scanner := bufio.NewScanner(strings.NewReader(input))
 
@@ -57,27 +59,80 @@ func buildCommandList(input []string) []command {
 	return commands
 }
 
-func addToPattern(x int, y int) {
+func addToColumn(x int, y int, index int) {
+	//add empty to row
+	if len(pattern[x]) <= y {
+		for i := len(pattern[x]); i <= y; i++ {
+			pattern[x] = append(pattern[x], tile{sign: EMPTY})
+		}
+	}
+	addPattern(x, y, index)
+}
+
+func addToRow(x int, y int, index int) {
 	horizontalSize := len(pattern)
 
 	//if array does not exist
-	if horizontalSize < x {
+	if horizontalSize <= x {
 		for i := horizontalSize; i <= x; i++ {
-			pattern = append(pattern, []string{})
-			for j := 0; j <= y; j++ {
-				pattern[i] = append(pattern[i], ".")
-			}
+			pattern = append(pattern, []tile{})
 		}
 	}
-	currentPattern := pattern[x][y]
-	switch p := currentPattern; p {
+	addToColumn(x, y, index)
+
+}
+func addPattern(x int, y int, index int) {
+
+	pattern[x][y].order = append(pattern[x][y].order, index)
+	switch p := pattern[x][y].sign; p {
 	case EMPTY:
-		pattern[x][y] = TAKEN
+		pattern[x][y].sign = TAKEN
 	case TAKEN:
-		pattern[x][y] = OVERRITTEN
+		pattern[x][y].sign = OVERRITTEN
 		takenCounter++
+		removeAll(pattern[x][y].order)
+	case OVERRITTEN:
+		removeAll(pattern[x][y].order)
+	}
+}
+func removeAll(orders []int) {
+	for _, element := range orders {
+		clean[element-1] = 0
 	}
 
+}
+
+func stringInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func remove(s []int, i int) {
+	s[len(s)-1], s[i] = s[i], s[len(s)-1]
+	clean = s[:len(s)-1]
+}
+func searchUntouched() {
+	var first bool = true
+	var row int
+	var col int
+	for i := 0; i < len(pattern); i++ {
+		for j := 0; j < len(pattern[i]); j++ {
+			if pattern[i][j].sign == TAKEN {
+				if first {
+					first = false
+					fmt.Println("NON OVERLAPPING BOX IS", i, "+", j)
+				}
+				row = i
+				col = j
+			}
+		}
+
+	}
+	fmt.Println("NON OVERLAPPING BOX IS", row, "+", col)
 }
 
 type command struct {
@@ -88,18 +143,28 @@ type command struct {
 	sign   string
 }
 
+type tile struct {
+	sign  string
+	order []int
+}
+
 func main() {
 	fmt.Println("Advent of code day 3 part 1")
 	commands := buildCommandList(getStringArray())
 
-	for _, element := range commands {
-
-		for i := element.endX; i >= element.startX; i-- {
-			for j := element.endY; j >= element.startY; j-- {
-				addToPattern(i, j)
+	for index, element := range commands {
+		clean = append(clean, index+1)
+		for i := element.endX; i > element.startX; i-- {
+			for j := element.endY; j > element.startY; j-- {
+				addToRow(i, j, index+1)
 			}
+		}
+		if !isChanged {
+			//	fmt.Println("NON OVERLAPPING BOX IS", index+1)
+
 		}
 	}
 
-	fmt.Println("Number of overritten ", takenCounter)
+	fmt.Println("Number of overritten ", clean)
+	//	searchUntouched()
 }
