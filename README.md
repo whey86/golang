@@ -1,2 +1,2 @@
 # golang
-golong test
+golang test
